@@ -24,7 +24,7 @@ app.get("/create-interesting", csrfProtection, (req, res) => {
   })
 })
 
-app.post("/create", csrfProtection, (req, res) => {
+const validateUser = (req, res, next) => {
   const { firstName, lastName, email, password, confirmedPassword } = req.body;
   const errors = [];
 
@@ -48,8 +48,48 @@ app.post("/create", csrfProtection, (req, res) => {
     errors.push("The provided values for the password and password confirmation fields did not match.");
   }
 
+  req.errors = errors;
+  next();
+}
+
+app.post("/create", csrfProtection, validateUser, (req, res) => {
   if (errors.length > 0) {
     res.render("create", {
+      errors,
+      csrfToken: req.csrfToken(),
+      firstName,
+      lastName,
+      email,
+      password
+    })
+    return;
+  }
+
+  const user = {
+    id: users.length + 1,
+    firstName: firstName,
+    lastName: lastName,
+    email: email,
+    password: password
+  }
+
+  users.push(user);
+  res.redirect("/");
+})
+
+app.post("/create-interesting", csrfProtection, validateUser, (req, res) => {
+  if (!age || 120 < age < 1) {
+    errors.push("age is required");
+    errors.push("age must be a valid age");
+  }
+
+  if (!favoriteBeatle || favoriteBeatle === "Scooby-Doo") {
+    errors.push("favoriteBeatle is required");
+    errors.push("favoriteBeatle must be a real Beatle member");
+  }
+
+  if (errors.length > 0) {
+    res.render("create-interesting", {
       errors,
       csrfToken: req.csrfToken(),
       firstName,
