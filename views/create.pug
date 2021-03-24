@@ -1,21 +1,7 @@
 extends layout.pug
 
-mixin formInput(id, type, text, value)
-    label(for=id)= text
-    input(type=type, id=id, name=id, value=value)
-
 block content
-    if errors
-        div
-            ul
-            p The following errors were found:
-                each error in errors
-                    li #{error}
+    include includes/errors.pug
     form(action="/create" method="post")
-        input(type="hidden" name="_csrf" value=csrfToken)
-        +formInput("firstName", "text", "First Name:", firstName)
-        +formInput("lastName", "text", "Last Name:", lastName)
-        +formInput("email", "email", "Email:", email)
-        +formInput("password", "password", "Password:", password)
-        +formInput("confirmedPassword", "password", "Confirm Password:")
+        include includes/form-inputs.pug
         input(type="submit" value="Create User")
