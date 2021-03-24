@@ -1,16 +1,21 @@
 extends layout.pug
 
+mixin formInput(id, type, text, value)
+    label(for=id)= text
+    input(type=type, id=id, name=id, value=value)
+
 block content
+    if errors
+        div
+            ul
+            p The following errors were found:
+                each error in errors
+                    li #{error}
     form(action="/create" method="post")
         input(type="hidden" name="_csrf" value=csrfToken)
-        label(for="firstName") First Name:
-        input(type="text" id="firstName" name="firstName")
-        label(for="lastName") Last Name:
-        input(type="text" id="lastName" name="lastName")
-        label(for="email") Email:
-        input(type="email" id="email" name="email")
-        label(for="password") Password:
-        input(type="password" id="password" name="password")
-        label(for="confirmedPassword") Confirm Password:
-        input(type="password" id="confirmedPassword" name="confirmedPassword")
+        +formInput("firstName", "text", "First Name:", firstName)
+        +formInput("lastName", "text", "Last Name:", lastName)
+        +formInput("email", "email", "Email:", email)
+        +formInput("password", "password", "Password:", password)
+        +formInput("confirmedPassword", "password", "Confirm Password:")
         input(type="submit" value="Create User")
