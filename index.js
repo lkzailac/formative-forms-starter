@@ -18,6 +18,12 @@ app.get("/create", csrfProtection, (req, res) => {
   res.render("create", {csrfToken:req.csrfToken()})
 })
 
+app.get("/create-interesting", csrfProtection, (req, res) => {
+  res.render("create-interesting", {
+    csrfToken: req.csrfToken(),
+  })
+})
+
 app.post("/create", csrfProtection, (req, res) => {
   const { firstName, lastName, email, password, confirmedPassword } = req.body;
   const errors = [];
