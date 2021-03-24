@@ -1,7 +1,10 @@
 extends layout.pug
 
-mixin favoriteBeatle(value)
-    option(value=value)
+mixin favoriteBeatle(value, text, selected)
+    if selected===value
+        option(value=value, selected)= text
+    else
+        option(value=value)= text
 
 block content
     include includes/errors.pug
@@ -11,12 +14,12 @@ block content
         input(type="number" id="age" name="age" value=age)
         label(for="favoriteBeatle") Choose Your Favorite Beatles Member:
         select(id="favoriteBeatle" name="favoriteBeatle")
-            option(value="") --Please choose an option--
-            +favoriteBeatle("John")
-            +favoriteBeatle("Paul")
-            +favoriteBeatle("Ringo")
-            +favoriteBeatle("George")
-            +favoriteBeatle("Scooby-Doo")
+            +favoriteBeatle("", "--Please choose an option--", favoriteBeatle)
+            +favoriteBeatle("John", "John", favoriteBeatle)
+            +favoriteBeatle("Paul", "Paul", favoriteBeatle)
+            +favoriteBeatle("Ringo", "Ringo", favoriteBeatle)
+            +favoriteBeatle("George", "George", favoriteBeatle)
+            +favoriteBeatle("Scooby-Doo", "Scooby-Doo", favoriteBeatle)
         label(for="iceCream") Do you like Ice Cream?
-        input(type="checkbox" id="iceCream" name="iceCream")
+        input(type="checkbox" id="iceCream" name="iceCream" checked=iceCream)
         input(type="submit" value="Create Interesting User")

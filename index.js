@@ -52,10 +52,34 @@ const validateUser = (req, res, next) => {
   next();
 }
 
+const validateInterestingUser = (req, res, next) => {
+  const { age, favoriteBeatle} = req.body;
+  const ageNum = parseInt(age, 10);
+
+  if(!age) {
+    req.errors.push("age is required");
+  };
+
+  if (!ageNum || ageNum < 0 || ageNum > 120) {
+    req.errors.push("age must be a valid age");
+  };
+
+  if (!favoriteBeatle) {
+    req.errors.push("favoriteBeatle is required");
+  };
+
+  if (favoriteBeatle === "Scooby-Doo") {
+    req.errors.push("favoriteBeatle must be a real Beatle member");
+  };
+  next();
+
+}
+
 app.post("/create", csrfProtection, validateUser, (req, res) => {
-  if (errors.length > 0) {
+  const { firstName, lastName, email, password } = req.body
+  if (req.errors.length > 0) {
     res.render("create", {
-      errors,
+      errors: req.errors,
       csrfToken: req.csrfToken(),
       firstName,
       lastName,
@@ -77,26 +101,26 @@ app.post("/create", csrfProtection, validateUser, (req, res) => {
   res.redirect("/");
 })
 
-app.post("/create-interesting", csrfProtection, validateUser, (req, res) => {
-  if (!age || 120 < age < 1) {
-    errors.push("age is required");
-    errors.push("age must be a valid age");
-  }
+app.post("/create-interesting", csrfProtection, validateUser, validateInterestingUser, (req, res) => {
+  const { firstName, lastName, email, password, age, favoriteBeatle, iceCream } = req.body
+  let iceCreamVal = false;
 
-  if (!favoriteBeatle || favoriteBeatle === "Scooby-Doo") {
-    errors.push("favoriteBeatle is required");
-    errors.push("favoriteBeatle must be a real Beatle member");
-  }
+  if(iceCream=== "on") {
+    iceCreamVal = true;
+  };
 
-  if (errors.length > 0) {
+  if (req.errors.length > 0) {
     res.render("create-interesting", {
-      errors,
+      errors: req.errors,
       csrfToken: req.csrfToken(),
       firstName,
       lastName,
       email,
-      password
-    })
+      password,
+      age,
+      favoriteBeatle,
+      iceCream
+    });
     return;
   }
 
@@ -105,8 +129,11 @@ app.post("/create-interesting", csrfProtection, validateUser, (req, res) => {
     firstName: firstName,
     lastName: lastName,
     email: email,
-    password: password
-  }
+    password: password,
+    age: age,
+    favoriteBeatle: favoriteBeatle,
+    iceCream: iceCreamVal
+  };
 
   users.push(user);
   res.redirect("/");
